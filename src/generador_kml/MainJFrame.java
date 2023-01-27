@@ -4,6 +4,17 @@
  */
 package generador_kml;
 
+import Classes.ComboBoxClass;
+import Classes.GenerateKml;
+import Classes.MessageDialogClass;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 /**
  *
  * @author emman
@@ -15,6 +26,7 @@ public class MainJFrame extends javax.swing.JFrame {
      */
     public MainJFrame() {
         initComponents();
+        new ComboBoxClass().ComboFuente(combo_ftes);
     }
 
     /**
@@ -26,21 +38,114 @@ public class MainJFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        combo_ftes = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        check_lines = new javax.swing.JCheckBox();
+        check_points = new javax.swing.JCheckBox();
+        jLabel2 = new javax.swing.JLabel();
+        btn_gen_kml = new javax.swing.JButton();
+        check_polygon = new javax.swing.JCheckBox();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        combo_ftes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel1.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
+        jLabel1.setText("Agregar:");
+
+        check_lines.setText("Lineas");
+
+        check_points.setText("Marcadores");
+
+        jLabel2.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        jLabel2.setText("Fuente");
+
+        btn_gen_kml.setBackground(new java.awt.Color(0, 153, 0));
+        btn_gen_kml.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
+        btn_gen_kml.setForeground(new java.awt.Color(255, 255, 255));
+        btn_gen_kml.setText("Generar KML");
+        btn_gen_kml.setToolTipText("");
+        btn_gen_kml.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_gen_kmlActionPerformed(evt);
+            }
+        });
+
+        check_polygon.setText("Poligonos");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btn_gen_kml)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel2)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(check_lines)
+                            .addGap(27, 27, 27)
+                            .addComponent(check_points)
+                            .addGap(39, 39, 39)
+                            .addComponent(check_polygon))
+                        .addComponent(jLabel1)
+                        .addComponent(combo_ftes, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(13, 13, 13)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(combo_ftes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(check_points)
+                        .addComponent(check_polygon))
+                    .addComponent(check_lines))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 98, Short.MAX_VALUE)
+                .addComponent(btn_gen_kml)
+                .addGap(32, 32, 32))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btn_gen_kmlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_gen_kmlActionPerformed
+        JFileChooser file = new JFileChooser();
+        file.addChoosableFileFilter(new FileNameExtensionFilter("Todos los Archivos *.KML", "kml", "KML"));
+        int select = file.showSaveDialog(null);
+   
+        JButton btnGen = btn_gen_kml;
+        btnGen.setEnabled(false);
+        btnGen.setText("Generando Archivo!");
+        
+        try {
+                  if(select == JFileChooser.APPROVE_OPTION) {
+                           File save = file.getSelectedFile();
+                           String rute = save.getAbsolutePath();
+                           String name = save.getName();
+                           System.out.println("Nombre: " + name);
+                           if(new GenerateKml().GenKml(combo_ftes.getSelectedItem().toString().trim(), check_points.isSelected(), check_lines.isSelected(), check_polygon.isSelected(), rute)) {
+                                 new MessageDialogClass().SussecessMessage("Se Genero el KML con Exito!");
+                           } else {
+                                    new MessageDialogClass().ErrorMessage("Ocurrio un Problema al Generar el Archivo!");
+                           }
+                  }
+        } catch (IOException ex) {
+            Logger.getLogger(MainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            new MessageDialogClass().ErrorMessage("Ocurrio un Problema al Generar el Archivo!");
+        }
+        
+        btnGen.setEnabled(true);
+        btnGen.setText("Generar KML");
+    }//GEN-LAST:event_btn_gen_kmlActionPerformed
 
     /**
      * @param args the command line arguments
@@ -78,5 +183,12 @@ public class MainJFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_gen_kml;
+    private javax.swing.JCheckBox check_lines;
+    private javax.swing.JCheckBox check_points;
+    private javax.swing.JCheckBox check_polygon;
+    private javax.swing.JComboBox<String> combo_ftes;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
 }
